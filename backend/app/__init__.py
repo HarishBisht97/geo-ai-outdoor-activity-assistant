@@ -1,0 +1,4 @@
+__version__ = "0.1.0"
+API_VERSION = "v1"
+ENGINE_VERSION = "0.1.0"
+RULES_VERSION = "2026.10.1"

@@ -1,0 +1,152 @@
+{
+  "type": "object",
+  "properties": {
+    "activity": {
+      "type": "string",
+      "enum": [
+        "running",
+        "cycling",
+        "golf",
+        "cricket",
+        "football",
+        "tennis",
+        "hiking",
+        "picnic",
+        "outdoor_event",
+        "photography",
+        "unsupported",
+        "none"
+      ]
+    },
+    "activity_detail": {
+      "type": "string"
+    },
+    "location_text": {
+      "type": "string"
+    },
+    "destination_text": {
+      "type": "string"
+    },
+    "radius_km": {
+      "type": "integer"
+    },
+    "duration_minutes": {
+      "type": "integer"
+    },
+    "day_ref": {
+      "type": "string",
+      "enum": [
+        "today",
+        "tomorrow",
+        "day_after_tomorrow",
+        "this_weekend",
+        "next_weekend",
+        "weekday",
+        "date",
+        "next_n_days",
+        "days_ahead",
+        "unspecified"
+      ]
+    },
+    "weekday": {
+      "type": "string",
+      "enum": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
+        "none"
+      ]
+    },
+    "date": {
+      "type": "string"
+    },
+    "n_days": {
+      "type": "integer"
+    },
+    "part_of_day": {
+      "type": "string",
+      "enum": [
+        "early_morning",
+        "morning",
+        "midday",
+        "afternoon",
+        "evening",
+        "sunrise",
+        "sunset",
+        "night",
+        "after_work",
+        "any",
+        "none"
+      ]
+    },
+    "clock_time": {
+      "type": "string"
+    },
+    "travel_mode": {
+      "type": "string",
+      "enum": [
+        "driving",
+        "cycling",
+        "walking",
+        "none"
+      ]
+    },
+    "children": {
+      "type": "boolean"
+    },
+    "elderly": {
+      "type": "boolean"
+    },
+    "sensitivities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "respiratory",
+          "heat_sensitive",
+          "limited_mobility"
+        ]
+      },
+      "maxItems": 3
+    },
+    "preferences": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "shade",
+          "water_view",
+          "quiet",
+          "lit",
+          "low_traffic",
+          "greenery",
+          "large_space"
+        ]
+      },
+      "maxItems": 4
+    }
+  },
+  "required": [
+    "activity",
+    "activity_detail",
+    "location_text",
+    "destination_text",
+    "radius_km",
+    "duration_minutes",
+    "day_ref",
+    "weekday",
+    "date",
+    "n_days",
+    "part_of_day",
+    "clock_time",
+    "travel_mode",
+    "children",
+    "elderly",
+    "sensitivities",
+    "preferences"
+  ]
+}

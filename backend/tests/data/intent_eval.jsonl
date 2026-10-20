@@ -1,0 +1,68 @@
+{"q": "Where can I go running tomorrow morning near Powai?", "activity": "running", "location": "Powai", "day_ref": "tomorrow", "part_of_day": "morning"}
+{"q": "Best place for a 5 km jog in Bandra this evening?", "activity": "running", "location": "Bandra", "day_ref": "today", "part_of_day": "evening"}
+{"q": "I have asthma. Is it a good idea to run in Delhi tomorrow morning?", "activity": "running", "location": "Delhi", "day_ref": "tomorrow", "part_of_day": "morning", "sensitivities": ["respiratory"]}
+{"q": "Running track near Koramangala, Bangalore on Saturday at 6 am", "activity": "running", "location": "Koramangala, Bangalore", "day_ref": "weekday", "part_of_day": null, "clock_time": "06:00"}
+{"q": "where should i jog around Juhu after work today", "activity": "running", "location": "Juhu", "day_ref": "today", "part_of_day": "after_work"}
+{"q": "Marathon training run near Lodhi Garden this weekend morning", "activity": "running", "location": "Lodhi Garden", "day_ref": "this_weekend", "part_of_day": "morning"}
+{"q": "Where can I go cycling near Indiranagar tomorrow evening?", "activity": "cycling", "location": "Indiranagar", "day_ref": "tomorrow", "part_of_day": "evening"}
+{"q": "Is it safe to cycle to work in Pune tomorrow at 8:30 am?", "activity": "cycling", "location": "Pune", "day_ref": "tomorrow", "part_of_day": null, "clock_time": "08:30"}
+{"q": "Good bike routes around Chandigarh over the next 3 days", "activity": "cycling", "location": "Chandigarh", "day_ref": "next_n_days", "part_of_day": null}
+{"q": "My asthmatic son wants to go cycling in Gurgaon on Sunday morning", "activity": "cycling", "location": "Gurgaon", "day_ref": "weekday", "part_of_day": "morning", "sensitivities": ["respiratory"], "children": true}
+{"q": "bicycle ride near Marine Drive at sunrise tomorrow", "activity": "cycling", "location": "Marine Drive", "day_ref": "tomorrow", "part_of_day": "sunrise"}
+{"q": "Can I play golf near Gurgaon this weekend?", "activity": "golf", "location": "Gurgaon", "day_ref": "this_weekend", "part_of_day": null}
+{"q": "Golf course near Whitefield for a round on Saturday morning", "activity": "golf", "location": "Whitefield", "day_ref": "weekday", "part_of_day": "morning"}
+{"q": "best tee time in Chennai tomorrow?", "activity": "golf", "location": "Chennai", "day_ref": "tomorrow", "part_of_day": null}
+{"q": "Which day in the next 5 days is best for golf near Hyderabad?", "activity": "golf", "location": "Hyderabad", "day_ref": "next_n_days", "part_of_day": null}
+{"q": "Is Saturday afternoon good for cricket in Whitefield?", "activity": "cricket", "location": "Whitefield", "day_ref": "weekday", "part_of_day": "afternoon"}
+{"q": "Where can we play cricket near Andheri tomorrow?", "activity": "cricket", "location": "Andheri", "day_ref": "tomorrow", "part_of_day": null}
+{"q": "Cricket ground near Salt Lake, Kolkata on Sunday", "activity": "cricket", "location": "Salt Lake, Kolkata", "day_ref": "weekday", "part_of_day": null}
+{"q": "nets practice in Thane this evening", "activity": "cricket", "location": "Thane", "day_ref": "today", "part_of_day": "evening"}
+{"q": "Football pitch near HSR Layout tomorrow evening", "activity": "football", "location": "HSR Layout", "day_ref": "tomorrow", "part_of_day": "evening"}
+{"q": "Where can we play 5-a-side in Noida tonight?", "activity": "football", "location": "Noida", "day_ref": "today", "part_of_day": "night"}
+{"q": "soccer with the kids near Powai this weekend", "activity": "football", "location": "Powai", "day_ref": "this_weekend", "part_of_day": null, "children": true}
+{"q": "Is it too hot for football in Ahmedabad tomorrow afternoon?", "activity": "football", "location": "Ahmedabad", "day_ref": "tomorrow", "part_of_day": "afternoon"}
+{"q": "Find tennis courts near Koregaon Park for Sunday morning", "activity": "tennis", "location": "Koregaon Park", "day_ref": "weekday", "part_of_day": "morning"}
+{"q": "When is the best time to play tennis in Jayanagar tomorrow?", "activity": "tennis", "location": "Jayanagar", "day_ref": "tomorrow", "part_of_day": null}
+{"q": "tennis in Vasant Kunj on 2026-10-24 at 7 am", "activity": "tennis", "location": "Vasant Kunj", "day_ref": "date", "part_of_day": null, "clock_time": "07:00"}
+{"q": "Can I play tennis near Banjara Hills after work?", "activity": "tennis", "location": "Banjara Hills", "day_ref": "unspecified", "part_of_day": "after_work"}
+{"q": "Is Sunday morning good for a trek near Lonavala?", "activity": "hiking", "location": "Lonavala", "day_ref": "weekday", "part_of_day": "morning"}
+{"q": "Hiking trails within 40 km of Bangalore this weekend", "activity": "hiking", "location": "Bangalore", "day_ref": "this_weekend", "part_of_day": null}
+{"q": "Where can I take my elderly parents for an evening walk near Bandra?", "activity": "hiking", "location": "Bandra", "day_ref": "unspecified", "part_of_day": "evening", "elderly": true}
+{"q": "nature walk around Sanjay Gandhi National Park tomorrow morning", "activity": "hiking", "location": "Sanjay Gandhi National Park", "day_ref": "tomorrow", "part_of_day": "morning"}
+{"q": "A short stroll near Connaught Place this afternoon", "activity": "hiking", "location": "Connaught Place", "day_ref": "today", "part_of_day": "afternoon"}
+{"q": "Plan a hike near Dehradun in 3 days", "activity": "hiking", "location": "Dehradun", "day_ref": "days_ahead", "part_of_day": null}
+{"q": "Is Cubbon Park good for a picnic with children this Saturday?", "activity": "picnic", "location": "Cubbon Park", "day_ref": "weekday", "part_of_day": null, "children": true}
+{"q": "Picnic spot near Powai with shade tomorrow afternoon", "activity": "picnic", "location": "Powai", "day_ref": "tomorrow", "part_of_day": "afternoon"}
+{"q": "family picnic in Lalbagh next weekend", "activity": "picnic", "location": "Lalbagh", "day_ref": "next_weekend", "part_of_day": null}
+{"q": "Good picnic place near Mysore on Sunday with grandparents", "activity": "picnic", "location": "Mysore", "day_ref": "weekday", "part_of_day": null, "elderly": true}
+{"q": "Is Friday evening okay for an outdoor birthday party in Bandra?", "activity": "outdoor_event", "location": "Bandra", "day_ref": "weekday", "part_of_day": "evening"}
+{"q": "Where can we host an outdoor event near Whitefield this weekend?", "activity": "outdoor_event", "location": "Whitefield", "day_ref": "this_weekend", "part_of_day": null}
+{"q": "open-air get-together in Indiranagar tomorrow night", "activity": "outdoor_event", "location": "Indiranagar", "day_ref": "tomorrow", "part_of_day": "night"}
+{"q": "Outdoor meetup in Kochi on Saturday afternoon for 30 people", "activity": "outdoor_event", "location": "Kochi", "day_ref": "weekday", "part_of_day": "afternoon"}
+{"q": "Where can I photograph the sunset near Mumbai tomorrow?", "activity": "photography", "location": "Mumbai", "day_ref": "tomorrow", "part_of_day": "sunset"}
+{"q": "Best spot for sunrise photography near Nandi Hills this weekend", "activity": "photography", "location": "Nandi Hills", "day_ref": "this_weekend", "part_of_day": "sunrise"}
+{"q": "photo walk in Old Delhi tomorrow morning", "activity": "photography", "location": "Old Delhi", "day_ref": "tomorrow", "part_of_day": "morning"}
+{"q": "Is the sky clear enough for photos at Marine Drive tonight?", "activity": "photography", "location": "Marine Drive", "day_ref": "today", "part_of_day": "night"}
+{"q": "Where can I go running tomorrow morning?", "activity": "running", "location": null, "day_ref": "tomorrow", "part_of_day": "morning"}
+{"q": "Is it a good day for a picnic?", "activity": "picnic", "location": null, "day_ref": "unspecified", "part_of_day": null}
+{"q": "Can I go skiing near Manali tomorrow?", "activity": "unsupported", "location": "Manali", "day_ref": "tomorrow", "part_of_day": null}
+{"q": "Where can I swim near Goa this weekend?", "activity": "unsupported", "location": "Goa", "day_ref": "this_weekend", "part_of_day": null}
+{"q": "What should I do outside in Pune tomorrow?", "activity": null, "location": "Pune", "day_ref": "tomorrow", "part_of_day": null}
+{"q": "Is Springfield good for cycling tomorrow?", "activity": "cycling", "location": "Springfield", "day_ref": "tomorrow", "part_of_day": null}
+{"q": "Running near Cambridge on Sunday morning", "activity": "running", "location": "Cambridge", "day_ref": "weekday", "part_of_day": "morning"}
+{"q": "Can I play golf in Edinburgh next weekend?", "activity": "golf", "location": "Edinburgh", "day_ref": "next_weekend", "part_of_day": null}
+{"q": "Where to jog in Central Park, New York tomorrow at 7am?", "activity": "running", "location": "Central Park, New York", "day_ref": "tomorrow", "part_of_day": null, "clock_time": "07:00"}
+{"q": "tennis near Shibuya, Tokyo this evening", "activity": "tennis", "location": "Shibuya, Tokyo", "day_ref": "today", "part_of_day": "evening"}
+{"q": "Picnic in Hyde Park, London on Saturday afternoon", "activity": "picnic", "location": "Hyde Park, London", "day_ref": "weekday", "part_of_day": "afternoon"}
+{"q": "My wife is pregnant; is a walk near Powai okay tomorrow evening?", "activity": "hiking", "location": "Powai", "day_ref": "tomorrow", "part_of_day": "evening", "sensitivities": ["heat_sensitive"]}
+{"q": "Cycling near Delhi with COPD on Sunday at 7 am", "activity": "cycling", "location": "Delhi", "day_ref": "weekday", "part_of_day": null, "clock_time": "07:00", "sensitivities": ["respiratory"]}
+{"q": "Where can I run within 3 km of Powai the day after tomorrow at sunrise?", "activity": "running", "location": "Powai", "day_ref": "day_after_tomorrow", "part_of_day": "sunrise"}
+{"q": "Cricket in Whitefield in 10 days?", "activity": "cricket", "location": "Whitefield", "day_ref": "days_ahead", "part_of_day": null}
+{"q": "Where can I go running tomorrow evening near Koregaon Park?", "activity": "running", "location": "Koregaon Park", "day_ref": "tomorrow", "part_of_day": "evening"}
+{"q": "What is the best time this weekend for a children's cricket match within 15 km of Whitefield?", "activity": "cricket", "location": "Whitefield", "day_ref": "this_weekend", "part_of_day": null, "children": true}
+{"q": "I have mild asthma. Where is suitable for a morning walk near Powai over the next two days?", "activity": "hiking", "location": "Powai", "day_ref": "next_n_days", "part_of_day": "morning", "sensitivities": ["respiratory"]}
+{"q": "Is it a good idea to cycle to work at 8 AM?", "activity": "cycling", "location": null, "day_ref": "unspecified", "part_of_day": null, "clock_time": "08:00"}
+{"q": "Where should I organize an outdoor birthday party on Sunday afternoon?", "activity": "outdoor_event", "location": null, "day_ref": "weekday", "part_of_day": "afternoon"}
+{"q": "What is the best time and place for hiking near Lonavala?", "activity": "hiking", "location": "Lonavala", "day_ref": "unspecified", "part_of_day": null}
+{"q": "Where can my elderly parents walk outside tomorrow?", "activity": "hiking", "location": null, "day_ref": "tomorrow", "part_of_day": null, "elderly": true}
+{"q": "Where can I take sunset photographs this evening?", "activity": "photography", "location": null, "day_ref": "today", "part_of_day": "sunset"}

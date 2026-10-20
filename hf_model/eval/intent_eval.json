@@ -1,0 +1,237 @@
+{
+  "dataset": "intent_eval.jsonl",
+  "n": 60,
+  "rules": {
+    "metrics": {
+      "activity": 1.0,
+      "location": 0.967,
+      "day_ref": 1.0,
+      "part_of_day": 1.0,
+      "clock_time": 1.0,
+      "sensitivities": 1.0,
+      "group": 0.983,
+      "all_fields": 0.95
+    },
+    "n": 60
+  },
+  "slm_raw": {
+    "metrics": {
+      "activity": 0.933,
+      "location": 0.983,
+      "day_ref": 0.6,
+      "part_of_day": 0.833,
+      "clock_time": 0.967,
+      "sensitivities": 0.983,
+      "group": 0.917,
+      "all_fields": 0.417
+    },
+    "n": 60
+  },
+  "final": {
+    "metrics": {
+      "activity": 0.967,
+      "location": 1.0,
+      "day_ref": 0.983,
+      "part_of_day": 0.833,
+      "clock_time": 0.967,
+      "sensitivities": 0.983,
+      "group": 0.917,
+      "all_fields": 0.717
+    },
+    "n": 60,
+    "json_valid_rate": 1.0,
+    "fallback_rate": 0.0,
+    "latency_s_p50": 7.92,
+    "latency_s_p95": 14.34,
+    "completion_tokens_mean": 85.7,
+    "threads": 2,
+    "model_file": "Qwen3-1.7B-Q4_K_M.gguf"
+  },
+  "failures": [
+    {
+      "q": "Running track near Koramangala, Bangalore on Saturday at 6 am",
+      "error": null,
+      "raw_wrong": [
+        "day_ref",
+        "part_of_day"
+      ],
+      "final_wrong": [
+        "part_of_day"
+      ]
+    },
+    {
+      "q": "bicycle ride near Marine Drive at sunrise tomorrow",
+      "error": null,
+      "raw_wrong": [
+        "clock_time"
+      ],
+      "final_wrong": [
+        "clock_time"
+      ]
+    },
+    {
+      "q": "Where can we play 5-a-side in Noida tonight?",
+      "error": null,
+      "raw_wrong": [
+        "day_ref",
+        "group"
+      ],
+      "final_wrong": [
+        "group"
+      ]
+    },
+    {
+      "q": "soccer with the kids near Powai this weekend",
+      "error": null,
+      "raw_wrong": [
+        "day_ref",
+        "part_of_day"
+      ],
+      "final_wrong": [
+        "part_of_day"
+      ]
+    },
+    {
+      "q": "When is the best time to play tennis in Jayanagar tomorrow?",
+      "error": null,
+      "raw_wrong": [
+        "part_of_day"
+      ],
+      "final_wrong": [
+        "part_of_day"
+      ]
+    },
+    {
+      "q": "tennis in Vasant Kunj on 2026-10-24 at 7 am",
+      "error": null,
+      "raw_wrong": [
+        "part_of_day"
+      ],
+      "final_wrong": [
+        "part_of_day"
+      ]
+    },
+    {
+      "q": "Where can I take my elderly parents for an evening walk near Bandra?",
+      "error": null,
+      "raw_wrong": [
+        "day_ref"
+      ],
+      "final_wrong": [
+        "day_ref"
+      ]
+    },
+    {
+      "q": "Is Cubbon Park good for a picnic with children this Saturday?",
+      "error": null,
+      "raw_wrong": [
+        "day_ref",
+        "part_of_day"
+      ],
+      "final_wrong": [
+        "part_of_day"
+      ]
+    },
+    {
+      "q": "family picnic in Lalbagh next weekend",
+      "error": null,
+      "raw_wrong": [
+        "group"
+      ],
+      "final_wrong": [
+        "group"
+      ]
+    },
+    {
+      "q": "Good picnic place near Mysore on Sunday with grandparents",
+      "error": null,
+      "raw_wrong": [
+        "day_ref",
+        "part_of_day",
+        "group"
+      ],
+      "final_wrong": [
+        "part_of_day",
+        "group"
+      ]
+    },
+    {
+      "q": "Is Friday evening okay for an outdoor birthday party in Bandra?",
+      "error": null,
+      "raw_wrong": [
+        "day_ref",
+        "group"
+      ],
+      "final_wrong": [
+        "group"
+      ]
+    },
+    {
+      "q": "Where can I photograph the sunset near Mumbai tomorrow?",
+      "error": null,
+      "raw_wrong": [
+        "part_of_day"
+      ],
+      "final_wrong": [
+        "part_of_day"
+      ]
+    },
+    {
+      "q": "Where can I swim near Goa this weekend?",
+      "error": null,
+      "raw_wrong": [
+        "activity"
+      ],
+      "final_wrong": [
+        "activity"
+      ]
+    },
+    {
+      "q": "What should I do outside in Pune tomorrow?",
+      "error": null,
+      "raw_wrong": [
+        "activity",
+        "part_of_day"
+      ],
+      "final_wrong": [
+        "activity",
+        "part_of_day"
+      ]
+    },
+    {
+      "q": "Where to jog in Central Park, New York tomorrow at 7am?",
+      "error": null,
+      "raw_wrong": [
+        "part_of_day"
+      ],
+      "final_wrong": [
+        "part_of_day"
+      ]
+    },
+    {
+      "q": "Cycling near Delhi with COPD on Sunday at 7 am",
+      "error": null,
+      "raw_wrong": [
+        "day_ref",
+        "part_of_day",
+        "sensitivities",
+        "group"
+      ],
+      "final_wrong": [
+        "part_of_day",
+        "sensitivities",
+        "group"
+      ]
+    },
+    {
+      "q": "Where can I run within 3 km of Powai the day after tomorrow at sunrise?",
+      "error": null,
+      "raw_wrong": [
+        "clock_time"
+      ],
+      "final_wrong": [
+        "clock_time"
+      ]
+    }
+  ]
+}

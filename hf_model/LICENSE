@@ -1,0 +1,12 @@
+Apache License
+Version 2.0, January 2004
+http://www.apache.org/licenses/
+
+The GGUF files in this repository are a quantization of Qwen/Qwen3-1.7B
+(revision 70d244cc86ccca08cf5af4e1e306ecf908b1ad5e), licensed Apache-2.0 by Alibaba
+Cloud / Qwen. See https://huggingface.co/Qwen/Qwen3-1.7B for the original LICENSE.
+
+The accompanying prompts, evaluation files and quantize.sh are provided under the
+same Apache-2.0 terms as the base model, except where a file states otherwise.
+
+You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0

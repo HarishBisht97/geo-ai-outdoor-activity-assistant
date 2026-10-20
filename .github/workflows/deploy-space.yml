@@ -1,0 +1,44 @@
+name: Deploy Hugging Face Space
+
+on:
+  push:
+    branches: [main]
+    paths: [backend/**, space/**, .github/workflows/deploy-space.yml]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.repository_owner != '' && vars.HF_SPACE != ''
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install huggingface_hub
+      - name: Sync backend + Space card to the Hugging Face Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          python - <<'PY'
+          import os, shutil, tempfile
+          from pathlib import Path
+          from huggingface_hub import HfApi
+          token = os.environ["HF_TOKEN"]
+          space = os.environ["HF_SPACE"]
+          root = Path(".")
+          with tempfile.TemporaryDirectory() as tmp:
+              stage = Path(tmp)
+              shutil.copytree(root / "backend" / "app", stage / "app")
+              shutil.copytree(root / "backend" / "static", stage / "static")
+              for f in ("Dockerfile", "requirements.txt", "requirements-slm.txt"):
+                  shutil.copy(root / "backend" / f, stage / f)
+              shutil.copy(root / "space" / "README.md", stage / "README.md")
+              api = HfApi(token=token)
+              api.upload_folder(folder_path=str(stage), repo_id=space, repo_type="space",
+                                commit_message=f"deploy {os.environ.get('GITHUB_SHA','')[:8]}")
+          print("uploaded", space)
+          PY

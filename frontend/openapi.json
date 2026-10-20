@@ -1,0 +1,2832 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "GeoAI Outdoor Activity Assistant API",
+    "description": "Recommends the best nearby place **and** time for outdoor activities using live OpenStreetMap, Open-Meteo and OSRM data, a deterministic safety-first ranking engine, and a self-hosted Qwen3-1.7B small language model (llama.cpp) for question understanding and explanations.\n\nAPI version: `v1`. Map data (c) OpenStreetMap contributors (ODbL).",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Liveness",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ready": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Readiness: model loaded and last-known provider status (no active probing)",
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recommend": {
+      "post": {
+        "tags": [
+          "recommendations"
+        ],
+        "summary": "Recommend the best nearby place and time for an outdoor activity",
+        "description": "Synchronous endpoint. Typical latency on the CPU deployment is 20-70 s (live data + SLM).\nUse `/api/v1/recommend/stream` to receive progress events and the ranking before the explanation.",
+        "operationId": "recommend_api_v1_recommend_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecommendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecommendResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/recommend/stream": {
+      "post": {
+        "tags": [
+          "recommendations"
+        ],
+        "summary": "Same as /recommend, streamed as Server-Sent Events",
+        "description": "Events: `stage` {stage, detail}; `ranking` (RecommendResponse without narrative); `done` (full RecommendResponse); `error` {code, message}.",
+        "operationId": "recommend_stream_api_v1_recommend_stream_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecommendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too Many Requests",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "504": {
+            "description": "Gateway Timeout",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/activities": {
+      "get": {
+        "tags": [
+          "metadata"
+        ],
+        "summary": "Supported activities and their scoring rules",
+        "operationId": "activities_api_v1_activities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response Activities Api V1 Activities Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sources": {
+      "get": {
+        "tags": [
+          "metadata"
+        ],
+        "summary": "External data sources, purposes, licences and limits",
+        "operationId": "sources_api_v1_sources_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response Sources Api V1 Sources Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Activity": {
+        "type": "string",
+        "enum": [
+          "running",
+          "cycling",
+          "golf",
+          "cricket",
+          "football",
+          "tennis",
+          "hiking",
+          "picnic",
+          "outdoor_event",
+          "photography"
+        ],
+        "title": "Activity"
+      },
+      "AlternativeSlot": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "suitable",
+              "caution",
+              "unverified",
+              "excluded"
+            ],
+            "title": "Status"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "status",
+          "total"
+        ],
+        "title": "AlternativeSlot"
+      },
+      "CandidateSummary": {
+        "properties": {
+          "venue_id": {
+            "type": "string",
+            "title": "Venue Id"
+          },
+          "display_label": {
+            "type": "string",
+            "title": "Display Label"
+          },
+          "coords": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "suitability": {
+            "type": "string",
+            "enum": [
+              "explicit",
+              "inferred"
+            ],
+            "title": "Suitability"
+          },
+          "distance_km": {
+            "type": "number",
+            "title": "Distance Km"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "recommended",
+              "ranked",
+              "excluded",
+              "unverified"
+            ],
+            "title": "Outcome"
+          },
+          "best_total": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Total"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "osm_url": {
+            "type": "string",
+            "title": "Osm Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "venue_id",
+          "display_label",
+          "coords",
+          "category",
+          "suitability",
+          "distance_km",
+          "outcome",
+          "osm_url"
+        ],
+        "title": "CandidateSummary"
+      },
+      "Clarification": {
+        "properties": {
+          "missing_fields": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Missing Fields"
+          },
+          "questions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Questions"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/ClarificationOption"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "partial_intent": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExtractedIntent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "missing_fields",
+          "questions"
+        ],
+        "title": "Clarification"
+      },
+      "ClarificationOption": {
+        "properties": {
+          "field": {
+            "type": "string",
+            "title": "Field"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "value": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "field",
+          "label",
+          "value"
+        ],
+        "title": "ClarificationOption"
+      },
+      "ContextIndicators": {
+        "properties": {
+          "nearest_major_road_m": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "nearest_major_road_class": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nearest Major Road Class"
+          },
+          "industrial_within_1km": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Industrial Within 1Km"
+          },
+          "green_share_500m": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "nearest_water_m": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "upwind_features": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Upwind Features"
+          },
+          "flags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Flags"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "partial",
+              "failed",
+              "stale",
+              "skipped"
+            ],
+            "title": "Status",
+            "default": "ok"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note",
+            "default": "Contextual indicators derived from OpenStreetMap features; not a pollution or traffic measurement."
+          }
+        },
+        "type": "object",
+        "required": [
+          "nearest_major_road_m",
+          "green_share_500m",
+          "nearest_water_m"
+        ],
+        "title": "ContextIndicators"
+      },
+      "Coordinates": {
+        "properties": {
+          "lat": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "Coordinates"
+      },
+      "ErrorBody": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message",
+          "request_id"
+        ],
+        "title": "ErrorBody"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse"
+      },
+      "EvidenceValue": {
+        "properties": {
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "unit": {
+            "type": "string",
+            "title": "Unit"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "forecast",
+              "modeled",
+              "observed",
+              "derived",
+              "unknown"
+            ],
+            "title": "Kind"
+          },
+          "valid_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Valid Time"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "value",
+          "unit",
+          "kind"
+        ],
+        "title": "EvidenceValue"
+      },
+      "ExtractedIntent": {
+        "properties": {
+          "activity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Activity"
+              },
+              {
+                "type": "string",
+                "const": "unsupported"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity"
+          },
+          "activity_detail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Detail"
+          },
+          "location_text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Text"
+          },
+          "destination_text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Text"
+          },
+          "radius_km": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radius Km"
+          },
+          "duration_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1440.0,
+                "minimum": 10.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Minutes"
+          },
+          "time": {
+            "$ref": "#/components/schemas/TimeExpression"
+          },
+          "travel_mode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "driving",
+                  "cycling",
+                  "walking"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Travel Mode"
+          },
+          "group": {
+            "$ref": "#/components/schemas/GroupInfo"
+          },
+          "sensitivities": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "respiratory",
+                "heat_sensitive",
+                "limited_mobility"
+              ]
+            },
+            "type": "array",
+            "title": "Sensitivities"
+          },
+          "preferences": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "shade",
+                "water_view",
+                "quiet",
+                "lit",
+                "low_traffic",
+                "greenery",
+                "large_space"
+              ]
+            },
+            "type": "array",
+            "title": "Preferences"
+          }
+        },
+        "type": "object",
+        "title": "ExtractedIntent",
+        "description": "What the SLM (or the rule-based fallback) extracts. Relative time only - never absolute timestamps."
+      },
+      "Fact": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Ids"
+          },
+          "numbers": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Numbers"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "text"
+        ],
+        "title": "Fact"
+      },
+      "GroupInfo": {
+        "properties": {
+          "children": {
+            "type": "boolean",
+            "title": "Children",
+            "default": false
+          },
+          "elderly": {
+            "type": "boolean",
+            "title": "Elderly",
+            "default": false
+          },
+          "size": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10000.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size"
+          }
+        },
+        "type": "object",
+        "title": "GroupInfo"
+      },
+      "HourPoint": {
+        "properties": {
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "temperature_c": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature C"
+          },
+          "heat_index_c": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heat Index C"
+          },
+          "precip_probability_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precip Probability Pct"
+          },
+          "precip_mm": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precip Mm"
+          },
+          "wind_kmh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wind Kmh"
+          },
+          "gust_kmh": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gust Kmh"
+          },
+          "cloud_cover_pct": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cloud Cover Pct"
+          },
+          "us_aqi": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Us Aqi"
+          },
+          "pm2_5": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pm2 5"
+          },
+          "is_day": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Day"
+          }
+        },
+        "type": "object",
+        "required": [
+          "time"
+        ],
+        "title": "HourPoint"
+      },
+      "HourlySeries": {
+        "properties": {
+          "venue_id": {
+            "type": "string",
+            "title": "Venue Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/HourPoint"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "type": "object",
+        "required": [
+          "venue_id",
+          "label",
+          "points"
+        ],
+        "title": "HourlySeries"
+      },
+      "IntentOverrides": {
+        "properties": {
+          "activity": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Activity"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "activity_detail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 80
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Detail"
+          },
+          "location_text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Text"
+          },
+          "destination_text": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Text"
+          },
+          "time": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TimeExpression"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "duration_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 1440.0,
+                "minimum": 10.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Minutes"
+          },
+          "sensitivities": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "respiratory",
+                    "heat_sensitive",
+                    "limited_mobility"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sensitivities"
+          },
+          "group": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GroupInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "IntentOverrides",
+        "description": "Structured answers from the clarification UI. Any provided field wins over extraction."
+      },
+      "ModelInfo": {
+        "properties": {
+          "base_model": {
+            "type": "string",
+            "title": "Base Model"
+          },
+          "base_revision": {
+            "type": "string",
+            "title": "Base Revision"
+          },
+          "runtime_repo": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runtime Repo"
+          },
+          "quantization": {
+            "type": "string",
+            "title": "Quantization"
+          },
+          "parameters": {
+            "type": "integer",
+            "title": "Parameters"
+          },
+          "loaded": {
+            "type": "boolean",
+            "title": "Loaded"
+          }
+        },
+        "type": "object",
+        "required": [
+          "base_model",
+          "base_revision",
+          "quantization",
+          "parameters",
+          "loaded"
+        ],
+        "title": "ModelInfo"
+      },
+      "Narrative": {
+        "properties": {
+          "summary": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NarrativeItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "best": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NarrativeItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "alternative": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NarrativeItem"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "why": {
+            "items": {
+              "$ref": "#/components/schemas/NarrativeItem"
+            },
+            "type": "array",
+            "title": "Why"
+          },
+          "carry": {
+            "items": {
+              "$ref": "#/components/schemas/NarrativeItem"
+            },
+            "type": "array",
+            "title": "Carry"
+          },
+          "watch_for": {
+            "items": {
+              "$ref": "#/components/schemas/NarrativeItem"
+            },
+            "type": "array",
+            "title": "Watch For"
+          },
+          "postpone_if": {
+            "items": {
+              "$ref": "#/components/schemas/NarrativeItem"
+            },
+            "type": "array",
+            "title": "Postpone If"
+          },
+          "caveats": {
+            "items": {
+              "$ref": "#/components/schemas/NarrativeItem"
+            },
+            "type": "array",
+            "title": "Caveats"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "slm",
+              "template",
+              "mixed"
+            ],
+            "title": "Source"
+          },
+          "removed_claims": {
+            "type": "integer",
+            "title": "Removed Claims",
+            "default": 0
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "source"
+        ],
+        "title": "Narrative"
+      },
+      "NarrativeItem": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "fact_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fact Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "NarrativeItem"
+      },
+      "OriginInput": {
+        "properties": {
+          "lat": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 120
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "OriginInput"
+      },
+      "Preferences": {
+        "properties": {
+          "radius_km": {
+            "anyOf": [
+              {
+                "type": "number",
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Radius Km",
+            "description": "Search radius; clamped to server maximum"
+          },
+          "travel_mode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "driving",
+                  "cycling",
+                  "walking"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Travel Mode"
+          },
+          "max_results": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "Max Results",
+            "default": 3
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OriginInput"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Explicit origin (e.g. browser geolocation with user consent)"
+          },
+          "time_window": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TimeWindowInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "sensitivities": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "enum": [
+                    "respiratory",
+                    "heat_sensitive",
+                    "limited_mobility"
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sensitivities"
+          }
+        },
+        "type": "object",
+        "title": "Preferences"
+      },
+      "Provenance": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Stable id referenced by evidence values, e.g. 'weather:open-meteo'"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "Query URL without secrets"
+          },
+          "retrieved_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Retrieved At"
+          },
+          "issued_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issued At"
+          },
+          "data_kind": {
+            "type": "string",
+            "enum": [
+              "forecast",
+              "modeled",
+              "observed",
+              "derived",
+              "unknown"
+            ],
+            "title": "Data Kind"
+          },
+          "license": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License"
+          },
+          "attribution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attribution"
+          },
+          "cache_hit": {
+            "type": "boolean",
+            "title": "Cache Hit",
+            "default": false
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "partial",
+              "failed",
+              "stale",
+              "skipped"
+            ],
+            "title": "Status",
+            "default": "ok"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "provider",
+          "retrieved_at",
+          "data_kind"
+        ],
+        "title": "Provenance"
+      },
+      "ProviderStatus": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "partial",
+              "failed",
+              "stale",
+              "skipped"
+            ],
+            "title": "Status"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "purpose",
+          "status"
+        ],
+        "title": "ProviderStatus"
+      },
+      "Reason": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "fact_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fact Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "Reason"
+      },
+      "RecommendRequest": {
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 3,
+            "title": "Question"
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/Preferences"
+          },
+          "overrides": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IntentOverrides"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "question"
+        ],
+        "title": "RecommendRequest",
+        "examples": [
+          {
+            "preferences": {
+              "radius_km": 10,
+              "travel_mode": "driving"
+            },
+            "question": "Where can I go running tomorrow morning near Powai?"
+          }
+        ]
+      },
+      "RecommendResponse": {
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "title": "Request Id"
+          },
+          "api_version": {
+            "type": "string",
+            "title": "Api Version"
+          },
+          "engine_version": {
+            "type": "string",
+            "title": "Engine Version"
+          },
+          "rules_version": {
+            "type": "string",
+            "title": "Rules Version"
+          },
+          "model": {
+            "$ref": "#/components/schemas/ModelInfo"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "needs_clarification",
+              "no_suitable_option",
+              "insufficient_data",
+              "error"
+            ],
+            "title": "Status"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "reference_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Reference Time"
+          },
+          "data_mode": {
+            "type": "string",
+            "enum": [
+              "live",
+              "fixture"
+            ],
+            "title": "Data Mode"
+          },
+          "interpretation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResolvedIntent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "extracted": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ExtractedIntent"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "clarification": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Clarification"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/Recommendation"
+            },
+            "type": "array",
+            "title": "Recommendations"
+          },
+          "candidates_considered": {
+            "items": {
+              "$ref": "#/components/schemas/CandidateSummary"
+            },
+            "type": "array",
+            "title": "Candidates Considered"
+          },
+          "timeline": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Timeline"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/Fact"
+            },
+            "type": "array",
+            "title": "Facts"
+          },
+          "narrative": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Narrative"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/WarningItem"
+            },
+            "type": "array",
+            "title": "Warnings"
+          },
+          "data_quality": {
+            "items": {
+              "$ref": "#/components/schemas/ProviderStatus"
+            },
+            "type": "array",
+            "title": "Data Quality"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/Provenance"
+            },
+            "type": "array",
+            "title": "Sources"
+          },
+          "attribution": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Attribution"
+          },
+          "disclaimer": {
+            "type": "string",
+            "title": "Disclaimer"
+          },
+          "timings_ms": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Timings Ms"
+          }
+        },
+        "type": "object",
+        "required": [
+          "request_id",
+          "api_version",
+          "engine_version",
+          "rules_version",
+          "model",
+          "status",
+          "message",
+          "generated_at",
+          "reference_time",
+          "data_mode",
+          "disclaimer"
+        ],
+        "title": "RecommendResponse"
+      },
+      "Recommendation": {
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "venue": {
+            "$ref": "#/components/schemas/Venue"
+          },
+          "best_slot": {
+            "$ref": "#/components/schemas/SlotResult"
+          },
+          "alternative_slots": {
+            "items": {
+              "$ref": "#/components/schemas/AlternativeSlot"
+            },
+            "type": "array",
+            "title": "Alternative Slots"
+          },
+          "travel": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TravelInfo"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ContextIndicators"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "positives": {
+            "items": {
+              "$ref": "#/components/schemas/Reason"
+            },
+            "type": "array",
+            "title": "Positives"
+          },
+          "negatives": {
+            "items": {
+              "$ref": "#/components/schemas/Reason"
+            },
+            "type": "array",
+            "title": "Negatives"
+          },
+          "advice": {
+            "items": {
+              "$ref": "#/components/schemas/Reason"
+            },
+            "type": "array",
+            "title": "Advice"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/WarningItem"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rank",
+          "venue",
+          "best_slot"
+        ],
+        "title": "Recommendation"
+      },
+      "ResolvedIntent": {
+        "properties": {
+          "activity": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Detail"
+          },
+          "origin": {
+            "$ref": "#/components/schemas/ResolvedPlace"
+          },
+          "destination": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResolvedPlace"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "requested_venue_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requested Venue Id",
+            "description": "Set when the named place is itself a suitable venue; it is evaluated first."
+          },
+          "radius_km": {
+            "type": "number",
+            "title": "Radius Km"
+          },
+          "window": {
+            "$ref": "#/components/schemas/ResolvedWindow"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "title": "Duration Minutes"
+          },
+          "travel_mode": {
+            "type": "string",
+            "enum": [
+              "driving",
+              "cycling",
+              "walking"
+            ],
+            "title": "Travel Mode"
+          },
+          "sensitivities": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "respiratory",
+                "heat_sensitive",
+                "limited_mobility"
+              ]
+            },
+            "type": "array",
+            "title": "Sensitivities"
+          },
+          "group": {
+            "$ref": "#/components/schemas/GroupInfo"
+          },
+          "preferences": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "shade",
+                "water_view",
+                "quiet",
+                "lit",
+                "low_traffic",
+                "greenery",
+                "large_space"
+              ]
+            },
+            "type": "array",
+            "title": "Preferences"
+          },
+          "parser": {
+            "type": "string",
+            "enum": [
+              "slm",
+              "rules_fallback"
+            ],
+            "title": "Parser"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "activity",
+          "origin",
+          "radius_km",
+          "window",
+          "duration_minutes",
+          "travel_mode",
+          "parser"
+        ],
+        "title": "ResolvedIntent"
+      },
+      "ResolvedPlace": {
+        "properties": {
+          "lat": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat"
+          },
+          "lon": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "source": {
+            "type": "string",
+            "enum": [
+              "nominatim",
+              "user_coordinates"
+            ],
+            "title": "Source"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lat",
+          "lon",
+          "label",
+          "source"
+        ],
+        "title": "ResolvedPlace"
+      },
+      "ResolvedWindow": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "timezone"
+        ],
+        "title": "ResolvedWindow"
+      },
+      "ScoreBreakdown": {
+        "properties": {
+          "total": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Total"
+          },
+          "completeness": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Completeness"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "high",
+              "medium",
+              "low"
+            ],
+            "title": "Confidence"
+          },
+          "safety_margin": {
+            "type": "number",
+            "title": "Safety Margin",
+            "description": "0..1, distance from the nearest safety threshold"
+          },
+          "components": {
+            "items": {
+              "$ref": "#/components/schemas/ScoreComponent"
+            },
+            "type": "array",
+            "title": "Components"
+          },
+          "missing_policy": {
+            "type": "string",
+            "title": "Missing Policy",
+            "default": "Missing components are excluded and the total is reduced by 50% of their weight share."
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "completeness",
+          "confidence",
+          "safety_margin",
+          "components"
+        ],
+        "title": "ScoreBreakdown"
+      },
+      "ScoreComponent": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score",
+            "description": "0..1, null when evidence is missing"
+          },
+          "weight": {
+            "type": "number",
+            "title": "Weight"
+          },
+          "contribution": {
+            "type": "number",
+            "title": "Contribution",
+            "description": "Points contributed to the 0..100 total"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Ids"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "score",
+          "weight",
+          "contribution",
+          "explanation"
+        ],
+        "title": "ScoreComponent"
+      },
+      "SlotConditions": {
+        "properties": {
+          "temperature_c": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "heat_index_c": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "humidity_pct": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "precip_probability_pct": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "precip_mm": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "prior_precip_mm": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "wind_kmh": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "gust_kmh": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "wind_direction_deg": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "cloud_cover_pct": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "cloud_cover_low_pct": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "visibility_m": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "uv_index": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "weather_code": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "weather_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weather Description"
+          },
+          "pm2_5": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "pm10": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "us_aqi": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "daylight": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Daylight"
+          },
+          "sunrise": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sunrise"
+          },
+          "sunset": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sunset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "temperature_c",
+          "heat_index_c",
+          "humidity_pct",
+          "precip_probability_pct",
+          "precip_mm",
+          "prior_precip_mm",
+          "wind_kmh",
+          "gust_kmh",
+          "wind_direction_deg",
+          "cloud_cover_pct",
+          "cloud_cover_low_pct",
+          "visibility_m",
+          "uv_index",
+          "weather_code",
+          "pm2_5",
+          "pm10",
+          "us_aqi"
+        ],
+        "title": "SlotConditions"
+      },
+      "SlotResult": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "suitable",
+              "caution",
+              "unverified",
+              "excluded"
+            ],
+            "title": "Status"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ScoreBreakdown"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "conditions": {
+            "$ref": "#/components/schemas/SlotConditions"
+          },
+          "exclusions": {
+            "items": {
+              "$ref": "#/components/schemas/WarningItem"
+            },
+            "type": "array",
+            "title": "Exclusions"
+          },
+          "cautions": {
+            "items": {
+              "$ref": "#/components/schemas/WarningItem"
+            },
+            "type": "array",
+            "title": "Cautions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "end",
+          "status",
+          "score",
+          "conditions"
+        ],
+        "title": "SlotResult"
+      },
+      "SunTimes": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "sunrise": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sunrise"
+          },
+          "sunset": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sunset"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "sunrise",
+          "sunset"
+        ],
+        "title": "SunTimes"
+      },
+      "TimeExpression": {
+        "properties": {
+          "day_ref": {
+            "type": "string",
+            "enum": [
+              "today",
+              "tomorrow",
+              "day_after_tomorrow",
+              "this_weekend",
+              "next_weekend",
+              "weekday",
+              "date",
+              "next_n_days",
+              "days_ahead",
+              "unspecified"
+            ],
+            "title": "Day Ref",
+            "default": "unspecified"
+          },
+          "weekday": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                  "sunday"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Weekday"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "n_days": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 7.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Days"
+          },
+          "days_ahead": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 366.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days Ahead",
+            "description": "'in 10 days' -> 10"
+          },
+          "part_of_day": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "early_morning",
+                  "morning",
+                  "midday",
+                  "afternoon",
+                  "evening",
+                  "sunrise",
+                  "sunset",
+                  "night",
+                  "after_work",
+                  "any"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Part Of Day"
+          },
+          "clock_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^([01]\\d|2[0-3]):[0-5]\\d$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clock Time"
+          }
+        },
+        "type": "object",
+        "title": "TimeExpression"
+      },
+      "TimeWindowInput": {
+        "properties": {
+          "start": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End"
+          }
+        },
+        "type": "object",
+        "required": [
+          "start",
+          "end"
+        ],
+        "title": "TimeWindowInput"
+      },
+      "Timeline": {
+        "properties": {
+          "slot_starts": {
+            "items": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "type": "array",
+            "title": "Slot Starts"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineRow"
+            },
+            "type": "array",
+            "title": "Rows"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/HourlySeries"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "sun": {
+            "items": {
+              "$ref": "#/components/schemas/SunTimes"
+            },
+            "type": "array",
+            "title": "Sun"
+          }
+        },
+        "type": "object",
+        "required": [
+          "slot_starts",
+          "rows",
+          "series",
+          "sun"
+        ],
+        "title": "Timeline"
+      },
+      "TimelineCell": {
+        "properties": {
+          "total": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "suitable",
+              "caution",
+              "unverified",
+              "excluded"
+            ],
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total",
+          "status"
+        ],
+        "title": "TimelineCell"
+      },
+      "TimelineRow": {
+        "properties": {
+          "venue_id": {
+            "type": "string",
+            "title": "Venue Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineCell"
+            },
+            "type": "array",
+            "title": "Cells"
+          }
+        },
+        "type": "object",
+        "required": [
+          "venue_id",
+          "label",
+          "cells"
+        ],
+        "title": "TimelineRow"
+      },
+      "TravelInfo": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "driving",
+              "cycling",
+              "walking"
+            ],
+            "title": "Mode"
+          },
+          "straight_line_km": {
+            "type": "number",
+            "title": "Straight Line Km"
+          },
+          "route_distance_km": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "duration_min": {
+            "$ref": "#/components/schemas/EvidenceValue"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "straight_line_km",
+          "route_distance_km",
+          "duration_min",
+          "note"
+        ],
+        "title": "TravelInfo"
+      },
+      "Venue": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Stable id, e.g. 'osm:way:348082938'"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "OSM name tag; null when unmapped (never invented)"
+          },
+          "display_label": {
+            "type": "string",
+            "title": "Display Label",
+            "description": "Name, or a deterministic descriptive label with the OSM id"
+          },
+          "coords": {
+            "$ref": "#/components/schemas/Coordinates"
+          },
+          "osm_type": {
+            "type": "string",
+            "enum": [
+              "node",
+              "way",
+              "relation"
+            ],
+            "title": "Osm Type"
+          },
+          "osm_id": {
+            "type": "integer",
+            "title": "Osm Id"
+          },
+          "osm_url": {
+            "type": "string",
+            "title": "Osm Url"
+          },
+          "tags": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Tags",
+            "description": "Allow-listed subset of OSM tags"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "suitability": {
+            "type": "string",
+            "enum": [
+              "explicit",
+              "inferred"
+            ],
+            "title": "Suitability"
+          },
+          "suitability_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Suitability Note"
+          },
+          "area_m2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area M2"
+          },
+          "distance_km": {
+            "type": "number",
+            "title": "Distance Km",
+            "description": "Geodesic distance from the origin"
+          },
+          "elevation_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Elevation M"
+          },
+          "source_id": {
+            "type": "string",
+            "title": "Source Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "display_label",
+          "coords",
+          "osm_type",
+          "osm_id",
+          "osm_url",
+          "category",
+          "suitability",
+          "distance_km",
+          "source_id"
+        ],
+        "title": "Venue"
+      },
+      "WarningItem": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "data_gap",
+              "caution",
+              "avoid"
+            ],
+            "title": "Type"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "code",
+          "message"
+        ],
+        "title": "WarningItem"
+      }
+    }
+  }
+}
